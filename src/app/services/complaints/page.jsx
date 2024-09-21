@@ -1,18 +1,55 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TextField, Button, Container, Typography, Snackbar, IconButton } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
 const Complaints = () => {
   const [complaint, setComplaint] = useState('');
+  const [location, setLocation] = useState(''); // Field for location
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setLocation(`${latitude}, ${longitude}`);
+        },
+        (error) => {
+          setError('Could not fetch location. Please allow location access.');
+        }
+      );
+    } else {
+      setError('Geolocation is not supported by this browser.');
+    }
+  }, []);
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // You can send the complaint to a backend or perform any other action here
-    console.log('Complaint Submitted:', complaint);
-    setSubmitted(true);
-    setComplaint(''); // Clear the input field
+
+    try {
+      const res = await fetch('/api/complaint', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: complaint,
+          location,
+        }),
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+        setComplaint(''); // Clear the input fields
+      } else {
+        const { message } = await res.json();
+        setError(message || 'Something went wrong!');
+      }
+    } catch (err) {
+      setError('Error submitting complaint. Please try again.');
+    }
   };
 
   const handleCloseSnackbar = () => {
@@ -24,7 +61,7 @@ const Complaints = () => {
       <Typography variant="h4" align="center" gutterBottom>
         Complaint Submission
       </Typography>
-      
+
       <form onSubmit={handleSubmit}>
         <TextField
           fullWidth
@@ -37,6 +74,18 @@ const Complaints = () => {
           required
           sx={{ mb: 2 }}
         />
+
+        {/* Location will be auto-added through geolocation */}
+        {/* <TextField
+          fullWidth
+          label="Location (auto-filled)"
+          variant="outlined"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)} // Optional if user wants to input a custom location
+          sx={{ mb: 2 }}
+          disabled
+        /> */}
+
         <Button variant="contained" color="primary" type="submit" fullWidth>
           Submit Complaint
         </Button>
@@ -54,6 +103,12 @@ const Complaints = () => {
           </IconButton>
         }
       />
+
+      {error && (
+        <Typography color="error" variant="body1" align="center" sx={{ mt: 2 }}>
+          {error}
+        </Typography>
+      )}
     </Container>
   );
 };

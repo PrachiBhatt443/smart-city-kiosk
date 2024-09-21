@@ -1,5 +1,5 @@
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Container,
   Typography,
@@ -14,53 +14,87 @@ import {
   DialogActions,
   Snackbar,
   IconButton,
+  CircularProgress,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 
-const busServices = [
-  {
-    id: 1,
-    route: 'Downtown to Uptown',
-    schedule: 'Every 30 minutes',
-    fare: '$2.50',
-  },
-  {
-    id: 2,
-    route: 'Airport to City Center',
-    schedule: 'Every 45 minutes',
-    fare: '$5.00',
-  },
-  {
-    id: 3,
-    route: 'Suburbs to Downtown',
-    schedule: 'Every hour',
-    fare: '$3.00',
-  },
-];
-
 const BusServices = () => {
+  const [busServices, setBusServices] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [open, setOpen] = useState(false);
   const [feedbackOpen, setFeedbackOpen] = useState(false);
   const [snackOpen, setSnackOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
   const [feedback, setFeedback] = useState('');
-  
+  const [passengerName, setPassengerName] = useState('');
+  const [numberOfTickets, setNumberOfTickets] = useState(1);
+
+  useEffect(() => {
+    fetchBusServices();
+  }, []);
+
+  // Fetch bus services from API
+  const fetchBusServices = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch('/api/busService');
+      if (response.ok) {
+        const data = await response.json();
+        setBusServices(data);
+      } else {
+        throw new Error('Failed to fetch bus services');
+      }
+    } catch (error) {
+      console.error('Error fetching bus services:', error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Handle opening the booking dialog
   const handleClickOpen = (service) => {
     setSelectedService(service);
     setOpen(true);
   };
 
+  // Handle closing the booking dialog
   const handleClose = () => {
     setOpen(false);
+    setPassengerName('');
+    setNumberOfTickets(1);
   };
 
-  const handleBook = () => {
-    // Add booking logic here
-    setSnackOpen(true);
-    handleClose();
-    setTimeout(() => {
-      setFeedbackOpen(true); // Open feedback form after booking
-    }, 1000);
+  // Book a ticket via the API
+  const handleBook = async () => {
+    try {
+      const response = await fetch('/api/busService', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          action: 'bookTicket',
+          serviceId: selectedService._id,
+          passengerName,
+          numberOfTickets,
+        }),
+      });
+
+      if (response.ok) {
+        setSnackOpen(true);
+        handleClose();
+        setTimeout(() => {
+          setFeedbackOpen(true);
+        }, 1000);
+      } else {
+        throw new Error('Failed to book ticket');
+      }
+    } catch (error) {
+      console.error('Error booking ticket:', error);
+      setError(error.message);
+    }
   };
 
   const handleSnackClose = () => {
@@ -73,11 +107,28 @@ const BusServices = () => {
   };
 
   const handleSubmitFeedback = () => {
-    // Process the feedback (send to backend, etc.)
     console.log('Feedback Submitted:', feedback);
     setFeedbackOpen(false);
     setFeedback('');
   };
+
+  if (loading) {
+    return (
+      <Container sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+        <CircularProgress />
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container>
+        <Typography variant="h6" color="error" align="center">
+          Error: {error}
+        </Typography>
+      </Container>
+    );
+  }
 
   return (
     <Container>
@@ -90,7 +141,7 @@ const BusServices = () => {
 
       <Grid container spacing={4}>
         {busServices.map((service) => (
-          <Grid item xs={12} sm={6} md={4} key={service.id}>
+          <Grid item xs={12} sm={6} md={4} key={service._id}>
             <Card sx={{ transition: '0.3s', '&:hover': { boxShadow: 3 } }}>
               <CardContent>
                 <Typography variant="h5">{service.route}</Typography>
@@ -121,6 +172,8 @@ const BusServices = () => {
             type="text"
             fullWidth
             variant="outlined"
+            value={passengerName}
+            onChange={(e) => setPassengerName(e.target.value)}
           />
           <TextField
             margin="dense"
@@ -128,7 +181,8 @@ const BusServices = () => {
             type="number"
             fullWidth
             variant="outlined"
-            defaultValue={1}
+            value={numberOfTickets}
+            onChange={(e) => setNumberOfTickets(parseInt(e.target.value))}
           />
         </DialogContent>
         <DialogActions>
