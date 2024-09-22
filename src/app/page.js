@@ -21,12 +21,12 @@ const services = [
     icon: <DirectionsBusIcon sx={{ fontSize: 60, color: '#1976d2' }} />, // Blue
     link: '/services/public-transport' // Updated path for the public transport page
   },
-  {
-    title: 'Waste Management',
-    description: 'Monitor waste collection schedules.',
-    icon: <DeleteIcon sx={{ fontSize: 60, color: 'grey' }} />, // Grey
-    link: '/services/waste-management' // Updated path for the waste management page
-  },
+  // {
+  //   title: 'Waste Management',
+  //   description: 'Monitor waste collection schedules.',
+  //   icon: <DeleteIcon sx={{ fontSize: 60, color: 'grey' }} />, // Grey
+  //   link: '/services/waste-management' // Updated path for the waste management page
+  // },
   {
     title: 'Local Announcements',
     description: 'Get the latest updates from the city administration.',
