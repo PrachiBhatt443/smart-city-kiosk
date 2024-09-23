@@ -38,8 +38,8 @@ const AnnouncementPage = () => {
         justifyContent: 'center',
         alignItems: 'center',
         height: '100vh',
-        background: 'linear-gradient(120deg, #4b6cb7, #182848)', // New gradient
-        color: '#fff',
+        background: 'linear-gradient(120deg, #e0f7fa, #f1f8e9)', // Light background gradient
+        color: '#333', // Soft dark text color
       }}
     >
       <Typography 
@@ -49,8 +49,9 @@ const AnnouncementPage = () => {
           textAlign: 'center', 
           fontWeight: 'bold', 
           mb: 4, 
-          fontFamily: 'Roboto, sans-serif', // Modern typography
-          letterSpacing: 2 
+          fontFamily: 'Roboto, sans-serif', 
+          letterSpacing: 2,
+          color: '#3e2723', // Light brown for a softer title
         }}
       >
         📢 City Announcements
@@ -62,29 +63,28 @@ const AnnouncementPage = () => {
           maxWidth: '600px',
           borderRadius: 3,
           overflow: 'hidden',
-          backgroundColor: 'rgba(255, 255, 255, 0.15)', // Light transparency
-          boxShadow: '0px 10px 30px rgba(0, 0, 0, 0.3)', // Shadow effect
+          backgroundColor: 'rgba(255, 255, 255, 0.9)', // Light and translucent
+          boxShadow: '0px 6px 20px rgba(0, 0, 0, 0.1)', // Soft shadow
         }}
       >
         <SwipeableViews index={currentAnnouncement} onChangeIndex={(index) => setCurrentAnnouncement(index)}>
           {announcements.map((announcement, index) => (
             <Paper 
               key={index} 
-              elevation={6} 
+              elevation={0} 
               sx={{ 
                 padding: theme.spacing(4), 
                 textAlign: 'center', 
                 borderRadius: 2, 
-                background: 'rgba(255, 255, 255, 0.85)' // Soft background for readability
+                background: '#ffffff', // Clean white background
               }}
             >
               <Typography 
                 variant="h4" 
                 sx={{ 
                   mb: 2, 
-                  color: '#ff9800', // Brighter title color 
+                  color: '#4caf50', // Soft green for titles
                   fontFamily: 'Roboto, sans-serif',
-                  textShadow: '1px 1px 3px rgba(0, 0, 0, 0.5)' // Title shadow for depth
                 }}
               >
                 {announcement.title}
@@ -93,7 +93,7 @@ const AnnouncementPage = () => {
                 variant="body1" 
                 sx={{ 
                   fontSize: '1.1rem', 
-                  color: '#333' // Darker text for readability 
+                  color: '#555' // Softer dark color for text
                 }}
               >
                 {announcement.description}
@@ -109,7 +109,7 @@ const AnnouncementPage = () => {
           onClick={handleBack} 
           startIcon={<ArrowBack />} 
           sx={{ 
-            bgcolor: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)', // Gradient button
+            bgcolor: 'linear-gradient(45deg, #81d4fa 30%, #b2dfdb 90%)', // Soft blue-green gradient
             color: '#fff',
             borderRadius: 3,
             padding: '10px 20px'
@@ -122,7 +122,7 @@ const AnnouncementPage = () => {
           onClick={handleNext} 
           endIcon={<ArrowForward />} 
           sx={{ 
-            bgcolor: 'linear-gradient(45deg, #66bb6a 30%, #43a047 90%)', // Gradient button
+            bgcolor: 'linear-gradient(45deg, #aed581 30%, #c5e1a5 90%)', // Soft green gradient
             color: '#fff',
             borderRadius: 3,
             padding: '10px 20px'
