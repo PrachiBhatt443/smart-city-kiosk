@@ -1,3 +1,12 @@
+import React from 'react'
+
+const AnnouncementPage = () => {
+  return (
+    <div>AnnouncementPage</div>
+  )
+}
+
+export default AnnouncementPage
 // 'use client';
 // import React, { useState, useEffect } from 'react';
 // import { Box, Typography, Paper, Button } from '@mui/material';
